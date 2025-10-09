@@ -1,0 +1,27 @@
+# Netlify Configuration for Prenatal Appointment Calculator
+
+[build]
+  # Build command
+  command = "npm run build"
+
+  # Directory that contains the deploy-ready HTML files and assets
+  publish = "dist"
+
+# Production context: all deploys from the main branch
+[context.production]
+  command = "npm run build"
+
+# Deploy Preview context: all deploys generated from a pull/merge request
+[context.deploy-preview]
+  command = "npm run build"
+
+# Branch Deploy context: all deploys that are not from a pull/merge request
+[context.branch-deploy]
+  command = "npm run build"
+
+# Redirects for SPA (Single Page Application)
+# This ensures that all routes are handled by index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
