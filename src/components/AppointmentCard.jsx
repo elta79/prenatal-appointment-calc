@@ -10,7 +10,8 @@ const colorClasses = {
   orange: 'bg-orange-50 border-orange-200',
   amber: 'bg-amber-50 border-amber-200',
   purple: 'bg-purple-50 border-purple-200',
-  green: 'bg-green-50 border-green-200'
+  green: 'bg-green-50 border-green-200',
+  rose: 'bg-rose-50 border-rose-200'
 };
 
 const iconColorClasses = {
@@ -21,7 +22,8 @@ const iconColorClasses = {
   orange: 'text-orange-600',
   amber: 'text-amber-600',
   purple: 'text-purple-600',
-  green: 'text-green-600'
+  green: 'text-green-600',
+  rose: 'text-rose-600'
 };
 
 const AppointmentCard = ({
@@ -39,26 +41,26 @@ const AppointmentCard = ({
       <div className="flex items-start gap-3">
         <Calendar className={`${iconColorClasses[color]} mt-1 flex-shrink-0`} size={24} />
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+          <h3 className="mb-2 text-lg font-semibold text-gray-800">{title}</h3>
 
           {showWeeks && weeks && (
-            <p className="text-sm text-gray-600 mb-2">
+            <p className="mb-2 text-sm text-gray-600">
               ({weeks} weeks gestation)
             </p>
           )}
 
           {description && (
-            <p className="text-sm text-gray-600 mb-2 italic">{description}</p>
+            <p className="mb-2 text-sm italic text-gray-600">{description}</p>
           )}
 
           {date && (
-            <p className="text-gray-700 font-medium">{formatDate(date)}</p>
+            <p className="font-medium text-gray-700">{formatDate(date)}</p>
           )}
 
           {dates && dates.length > 0 && (
             <div className="mt-2">
               {isFridaySelection && (
-                <p className="text-sm font-semibold text-gray-700 mb-2">
+                <p className="mb-2 text-sm font-semibold text-gray-700">
                   Available Fridays, choose one:
                 </p>
               )}

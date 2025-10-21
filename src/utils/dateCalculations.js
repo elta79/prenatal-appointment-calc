@@ -193,6 +193,9 @@ export function calculateAppointments(dueDateString) {
   // 37 week appointment - 2 closest Fridays
   const week37Fridays = findClosestFridays(dueDate, 37);
 
+  // 41 week Biophysical profile - exact date at 41 weeks
+  const week41 = calculateWeekDate(dueDate, 41);
+
   // Classes
   const childbirthClass = getFirstSaturday(yearForClasses, monthBeforeDue);
   const breastfeedingClass = getThirdThursday(yearForClasses, monthBeforeDue);
@@ -223,6 +226,10 @@ export function calculateAppointments(dueDateString) {
     week37: {
       fridays: [week37Fridays.before, week37Fridays.after],
       weeks: 37
+    },
+    week41BiophysicalProfile: {
+      date: week41,
+      weeks: 41
     },
     childbirthClass: {
       date: childbirthClass,
