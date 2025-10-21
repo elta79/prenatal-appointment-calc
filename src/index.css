@@ -18,5 +18,50 @@ body {
 
   .print-break {
     page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Two-column layout for print */
+  .space-y-4 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+    column-gap: 1rem !important;
+  }
+
+  /* Reduce padding and spacing for print */
+  .min-h-screen {
+    min-height: auto !important;
+    padding: 0.5rem !important;
+  }
+
+  .max-w-4xl {
+    max-width: 100% !important;
+  }
+
+  /* Make cards more compact */
+  .print-break {
+    padding: 0.5rem !important;
+    margin: 0 !important;
+  }
+
+  /* Reduce text sizes slightly */
+  h3 {
+    font-size: 0.9rem !important;
+  }
+
+  p {
+    font-size: 0.75rem !important;
+  }
+
+  /* Reduce header spacing */
+  .print\:mb-6 {
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Footer spacing */
+  .print\:block {
+    margin-top: 1rem !important;
+    padding-top: 0.5rem !important;
   }
 }
