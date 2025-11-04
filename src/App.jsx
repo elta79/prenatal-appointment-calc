@@ -6,7 +6,6 @@ import { calculateAppointments } from './utils/dateCalculations';
 function App() {
   const [dueDate, setDueDate] = useState('');
   const [appointments, setAppointments] = useState(null);
-  const [showGestationalAge, setShowGestationalAge] = useState(true);
 
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
@@ -56,17 +55,7 @@ function App() {
           </div>
 
           {appointments && (
-            <div className="flex flex-col items-center justify-center gap-4 mt-6 sm:flex-row">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showGestationalAge}
-                  onChange={(e) => setShowGestationalAge(e.target.checked)}
-                  className="w-4 h-4 text-pink-600 rounded focus:ring-pink-500"
-                />
-                <span className="text-sm text-gray-700">Show gestational age</span>
-              </label>
-
+            <div className="flex items-center justify-center mt-6">
               <button
                 onClick={handlePrint}
                 className="flex items-center gap-2 px-6 py-2 text-white transition-colors bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700"
@@ -83,11 +72,9 @@ function App() {
           <div className="space-y-4">
             {/* Due Date */}
             <AppointmentCard
-              title="Estimated Due Date"
+              title="Estimated Due Date - 40 weeks"
               date={appointments.dueDate.date}
               color="pink"
-              showWeeks={showGestationalAge}
-              weeks={appointments.dueDate.weeks}
             />
 
             {/* 20 Week Ultrasound */}
@@ -95,17 +82,13 @@ function App() {
               title="20 Week Ultrasound"
               date={appointments.ultrasound20Week.date}
               color="indigo"
-              showWeeks={showGestationalAge}
-              weeks={appointments.ultrasound20Week.weeks}
             />
 
             {/* Glucose Test */}
             <AppointmentCard
-              title="Glucose Test"
+              title="Glucose Test - 26-28 weeks"
               dates={appointments.glucoseTest.fridays}
               color="blue"
-              showWeeks={showGestationalAge}
-              weeks={appointments.glucoseTest.weeks}
               isFridaySelection={true}
             />
 
@@ -114,8 +97,6 @@ function App() {
               title="32 Week Appointment"
               dates={appointments.week32.fridays}
               color="teal"
-              showWeeks={showGestationalAge}
-              weeks={appointments.week32.weeks}
               isFridaySelection={true}
             />
 
@@ -124,8 +105,6 @@ function App() {
               title="36 Week Labs"
               dates={appointments.week36Labs.fridays}
               color="orange"
-              showWeeks={showGestationalAge}
-              weeks={appointments.week36Labs.weeks}
               isFridaySelection={true}
             />
 
@@ -134,8 +113,6 @@ function App() {
               title="37 Week Appointment"
               dates={appointments.week37.fridays}
               color="amber"
-              showWeeks={showGestationalAge}
-              weeks={appointments.week37.weeks}
               isFridaySelection={true}
             />
 
@@ -144,8 +121,6 @@ function App() {
               title="41 Week Biophysical Profile"
               date={appointments.week41BiophysicalProfile.date}
               color="rose"
-              showWeeks={showGestationalAge}
-              weeks={appointments.week41BiophysicalProfile.weeks}
             />
 
             {/* Childbirth Education Class */}
