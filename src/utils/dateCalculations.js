@@ -23,9 +23,9 @@ export function subtractDays(date, days) {
  */
 export function formatDate(date) {
   return date.toLocaleDateString('en-US', {
-    weekday: 'long',
+    weekday: 'short',
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric'
   });
 }
@@ -40,204 +40,181 @@ export function calculateWeekDate(dueDate, weeks) {
 }
 
 /**
- * Find the closest Friday before a given date
+ * Find the next occurrence of a specific day of week from a given date
+ * @param {Date} date - Starting date
+ * @param {number} targetDay - Day of week (0=Sunday, 1=Monday, etc.)
+ * @param {boolean} includeToday - Whether to include the starting date if it matches
  */
-export function findFridayBefore(date) {
+export function findNextDayOfWeek(date, targetDay, includeToday = false) {
   const result = new Date(date);
-  // Get day of week (0 = Sunday, 5 = Friday)
-  const dayOfWeek = result.getDay();
+  const currentDay = result.getDay();
 
-  // Calculate days to subtract to get to Friday
-  let daysToSubtract;
-  if (dayOfWeek === 5) {
-    // If it's already Friday, go back 7 days
-    daysToSubtract = 7;
-  } else if (dayOfWeek === 6) {
-    // Saturday - go back 1 day
-    daysToSubtract = 1;
-  } else {
-    // Sunday (0) through Thursday (4)
-    // Sunday: 0 + 2 = 2 days back
-    // Monday: 1 + 2 = 3 days back
-    // Thursday: 4 + 2 = 6 days back
-    daysToSubtract = dayOfWeek === 0 ? 2 : dayOfWeek + 2;
-  }
-
-  return subtractDays(result, daysToSubtract);
-}
-
-/**
- * Find the closest Friday after a given date
- */
-export function findFridayAfter(date) {
-  const result = new Date(date);
-  const dayOfWeek = result.getDay();
-
-  // Calculate days to add to get to Friday
   let daysToAdd;
-  if (dayOfWeek === 5) {
-    // If it's already Friday, go forward 7 days
-    daysToAdd = 7;
-  } else if (dayOfWeek < 5) {
-    // Before Friday in the same week
-    daysToAdd = 5 - dayOfWeek;
+  if (currentDay === targetDay && includeToday) {
+    daysToAdd = 0;
+  } else if (currentDay < targetDay) {
+    daysToAdd = targetDay - currentDay;
   } else {
-    // Saturday (6) or Sunday (0)
-    daysToAdd = dayOfWeek === 6 ? 6 : 5;
+    daysToAdd = 7 - currentDay + targetDay;
   }
 
   return addDays(result, daysToAdd);
 }
 
 /**
- * Find two closest Fridays (one before, one after) for a specific week
+ * Find the exact Friday at a specific week of gestation
  */
-export function findClosestFridays(dueDate, targetWeek) {
-  const targetDate = calculateWeekDate(dueDate, targetWeek);
-  return {
-    before: findFridayBefore(targetDate),
-    after: findFridayAfter(targetDate)
-  };
+export function findFridayAtWeek(dueDate, week) {
+  const targetDate = calculateWeekDate(dueDate, week);
+  return findNextDayOfWeek(targetDate, 5, true);
 }
 
 /**
- * Find Fridays within or closest to a date range
- * Returns one Friday before/within and one after/within the range
+ * Get alternating lab Fridays starting from January 9, 2026
+ * Returns the two lab Friday options closest to the target date
  */
-export function findFridaysInRange(startDate, endDate) {
-  // Find Friday closest to start (before or within)
-  let fridayStart = new Date(startDate);
-  const startDayOfWeek = fridayStart.getDay();
+export function getLabFridays(targetDate) {
+  // Reference date: January 9, 2026 is a lab Friday
+  const referenceDate = new Date(2026, 0, 9); // Month is 0-indexed
 
-  if (startDayOfWeek <= 5) {
-    // If start is before or on Friday, find that Friday
-    const daysToFriday = startDayOfWeek === 5 ? 0 : 5 - startDayOfWeek;
-    fridayStart = addDays(fridayStart, daysToFriday);
-  } else {
-    // If start is Saturday or Sunday, get next Friday
-    const daysToFriday = startDayOfWeek === 6 ? 6 : 5;
-    fridayStart = addDays(fridayStart, daysToFriday);
+  // Calculate weeks difference
+  const daysDiff = Math.floor((targetDate - referenceDate) / (1000 * 60 * 60 * 24));
+  const weeksDiff = Math.floor(daysDiff / 7);
+
+  // Find the lab Friday on or before target date
+  const weeksToReference = Math.floor(weeksDiff / 2) * 2;
+  const labFriday1 = addDays(referenceDate, weeksToReference * 7);
+
+  // Get the next lab Friday (2 weeks later)
+  const labFriday2 = addDays(labFriday1, 14);
+
+  // If labFriday1 is way before target, use the next one
+  if (labFriday1 < subtractDays(targetDate, 14)) {
+    return [labFriday2, addDays(labFriday2, 14)];
   }
 
-  // If this Friday is after the end date, use the Friday before start
-  if (fridayStart > endDate) {
-    fridayStart = findFridayBefore(startDate);
-  }
+  return [labFriday1, labFriday2];
+}
 
-  // Find the next Friday after fridayStart
-  const fridayEnd = addDays(fridayStart, 7);
+/**
+ * Find Monday and Wednesday options for a given week
+ */
+export function getMondayWednesdayOptions(targetDate) {
+  const monday = findNextDayOfWeek(subtractDays(targetDate, 3), 1, true);
+  const wednesday = findNextDayOfWeek(subtractDays(targetDate, 3), 3, true);
 
-  return {
-    first: fridayStart,
-    second: fridayEnd
-  };
+  return [monday, wednesday];
 }
 
 /**
  * Get the first Saturday of a given month
  */
 export function getFirstSaturday(year, month) {
-  // Month is 0-indexed (0 = January)
   const firstDay = new Date(year, month, 1);
-  const dayOfWeek = firstDay.getDay();
-
-  // Calculate days until Saturday (6)
-  const daysUntilSaturday = dayOfWeek === 6 ? 0 : (6 - dayOfWeek + 7) % 7;
-
-  return addDays(firstDay, daysUntilSaturday);
+  return findNextDayOfWeek(firstDay, 6, true);
 }
 
 /**
  * Get the third Thursday of a given month
  */
 export function getThirdThursday(year, month) {
-  // Month is 0-indexed (0 = January)
   const firstDay = new Date(year, month, 1);
-  const dayOfWeek = firstDay.getDay();
-
-  // Calculate days until first Thursday (4)
-  const daysUntilThursday = dayOfWeek === 4 ? 0 : (4 - dayOfWeek + 7) % 7;
-  const firstThursday = addDays(firstDay, daysUntilThursday);
-
-  // Third Thursday is 14 days after first Thursday
+  const firstThursday = findNextDayOfWeek(firstDay, 4, true);
   return addDays(firstThursday, 14);
+}
+
+/**
+ * Find two Friday telehealth options around a target week
+ */
+export function getTelehealthFridayOptions(dueDate, week) {
+  const targetDate = calculateWeekDate(dueDate, week);
+  const friday1 = findNextDayOfWeek(subtractDays(targetDate, 3), 5, true);
+  const friday2 = addDays(friday1, 7);
+  return [friday1, friday2];
 }
 
 /**
  * Calculate all prenatal appointments based on due date
  */
 export function calculateAppointments(dueDateString) {
-  // Parse the date string as local time to avoid timezone issues
-  // Input format is "YYYY-MM-DD"
   const [year, month, day] = dueDateString.split('-').map(num => parseInt(num, 10));
   const dueDate = new Date(year, month - 1, day);
 
-  // Calculate the month before the due date month
-  const monthBeforeDue = dueDate.getMonth() === 0 ? 11 : dueDate.getMonth() - 1;
-  const yearForClasses = dueDate.getMonth() === 0 ? dueDate.getFullYear() - 1 : dueDate.getFullYear();
+  // First Trimester
+  const week13 = calculateWeekDate(dueDate, 13);
+  const week11 = calculateWeekDate(dueDate, 11);
+  const initialTelehealth = findFridayAtWeek(dueDate, 11);
+  const initialLabs = getLabFridays(week11);
+  const firstOfficeVisit = getMondayWednesdayOptions(addDays(initialTelehealth, 3));
 
-  // 20 week ultrasound - just the date, no Fridays needed
+  // Second Trimester - Monthly appointments (every 4 weeks) from first office visit until 28 weeks
   const week20 = calculateWeekDate(dueDate, 20);
-
-  // Glucose test - 26-28 weeks range, find 2 closest Fridays
-  const week26 = calculateWeekDate(dueDate, 26);
+  const week16 = calculateWeekDate(dueDate, 16);
+  const week24 = calculateWeekDate(dueDate, 24);
   const week28 = calculateWeekDate(dueDate, 28);
-  const glucoseFridays = findFridaysInRange(week26, week28);
 
-  // 32 week appointment - 2 closest Fridays
-  const week32Fridays = findClosestFridays(dueDate, 32);
+  const secondTrimesterAppts = [
+    { week: 16, dates: getMondayWednesdayOptions(week16) },
+    { week: 20, date: week20, isUltrasound: true },
+    { week: 24, dates: getMondayWednesdayOptions(week24) },
+    { week: 28, dates: getMondayWednesdayOptions(week28) }
+  ];
 
-  // 36 week labs - 2 closest Fridays
-  const week36Fridays = findClosestFridays(dueDate, 36);
+  // Third Trimester - Every 2 weeks from 28-36 weeks
+  const week30 = calculateWeekDate(dueDate, 30);
+  const week32 = calculateWeekDate(dueDate, 32);
+  const week34 = calculateWeekDate(dueDate, 34);
+  const week36 = calculateWeekDate(dueDate, 36);
 
-  // 37 week appointment - 2 closest Fridays
-  const week37Fridays = findClosestFridays(dueDate, 37);
+  const glucoseTest = getLabFridays(calculateWeekDate(dueDate, 27));
+  const week32Telehealth = getTelehealthFridayOptions(dueDate, 32);
+  const week36Labs = getLabFridays(week36);
 
-  // 41 week Biophysical profile - exact date at 41 weeks
+  const thirdTrimesterAppts = [
+    { week: 30, dates: getMondayWednesdayOptions(week30) },
+    { week: 32, dates: getMondayWednesdayOptions(week32), telehealth: week32Telehealth },
+    { week: 34, dates: getMondayWednesdayOptions(week34) },
+    { week: 36, dates: getMondayWednesdayOptions(week36), labs: week36Labs }
+  ];
+
+  // Weekly appointments from 36-41 weeks
+  const week37 = calculateWeekDate(dueDate, 37);
+  const week38 = calculateWeekDate(dueDate, 38);
+  const week39 = calculateWeekDate(dueDate, 39);
+  const week40 = dueDate;
   const week41 = calculateWeekDate(dueDate, 41);
 
+  const week37Telehealth = getTelehealthFridayOptions(dueDate, 37);
+
+  const weeklyAppts = [
+    { week: 37, dates: getMondayWednesdayOptions(week37), telehealth: week37Telehealth },
+    { week: 38, dates: getMondayWednesdayOptions(week38) },
+    { week: 39, dates: getMondayWednesdayOptions(week39) },
+    { week: 40, date: week40, isDueDate: true },
+    { week: 41, date: week41, isBiophysical: true }
+  ];
+
   // Classes
+  const monthBeforeDue = dueDate.getMonth() === 0 ? 11 : dueDate.getMonth() - 1;
+  const yearForClasses = dueDate.getMonth() === 0 ? dueDate.getFullYear() - 1 : dueDate.getFullYear();
   const childbirthClass = getFirstSaturday(yearForClasses, monthBeforeDue);
   const breastfeedingClass = getThirdThursday(yearForClasses, monthBeforeDue);
 
   return {
-    dueDate: {
-      date: dueDate,
-      weeks: 40
+    firstTrimester: {
+      week13,
+      initialTelehealth,
+      initialLabs,
+      firstOfficeVisit
     },
-    ultrasound20Week: {
-      date: week20,
-      weeks: 20
+    secondTrimester: secondTrimesterAppts,
+    glucoseTest,
+    thirdTrimester: thirdTrimesterAppts,
+    weeklyAppts,
+    classes: {
+      childbirth: childbirthClass,
+      breastfeeding: breastfeedingClass
     },
-    glucoseTest: {
-      rangeStart: week26,
-      rangeEnd: week28,
-      fridays: [glucoseFridays.first, glucoseFridays.second],
-      weeks: '26-28'
-    },
-    week32: {
-      fridays: [week32Fridays.before, week32Fridays.after],
-      weeks: 32
-    },
-    week36Labs: {
-      fridays: [week36Fridays.before, week36Fridays.after],
-      weeks: 36
-    },
-    week37: {
-      fridays: [week37Fridays.before, week37Fridays.after],
-      weeks: 37
-    },
-    week41BiophysicalProfile: {
-      date: week41,
-      weeks: 41
-    },
-    childbirthClass: {
-      date: childbirthClass,
-      description: 'First Saturday of the month before due date'
-    },
-    breastfeedingClass: {
-      date: breastfeedingClass,
-      description: 'Third Thursday of the month before due date'
-    }
+    dueDate
   };
 }

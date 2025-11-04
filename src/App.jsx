@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Printer, Baby } from 'lucide-react';
 import AppointmentCard from './components/AppointmentCard';
-import { calculateAppointments } from './utils/dateCalculations';
+import { calculateAppointments, formatDate } from './utils/dateCalculations';
 
 function App() {
   const [dueDate, setDueDate] = useState('');
@@ -70,76 +70,167 @@ function App() {
         {/* Appointments Display */}
         {appointments && (
           <div className="space-y-4">
-            {/* Due Date */}
+            {/* First Trimester */}
             <AppointmentCard
-              title="Estimated Due Date - 40 weeks"
-              date={appointments.dueDate.date}
+              title="First Trimester"
+              description={`Schedule before ${formatDate(appointments.firstTrimester.week13)}`}
               color="pink"
             />
 
-            {/* 20 Week Ultrasound */}
             <AppointmentCard
-              title="20 Week Ultrasound"
-              date={appointments.ultrasound20Week.date}
+              title="Initial Telehealth Appointment - 11 weeks"
+              date={appointments.firstTrimester.initialTelehealth}
               color="indigo"
             />
 
-            {/* Glucose Test */}
             <AppointmentCard
-              title="Glucose Test - 26-28 weeks"
-              dates={appointments.glucoseTest.fridays}
+              title="Initial Labs"
+              dates={appointments.firstTrimester.initialLabs}
+              description="Lab day options (choose one):"
               color="blue"
               isFridaySelection={true}
             />
 
-            {/* 32 Week Appointment */}
             <AppointmentCard
-              title="32 Week Appointment"
-              dates={appointments.week32.fridays}
+              title="First In-Office Visit"
+              dates={appointments.firstTrimester.firstOfficeVisit}
+              description="Choose one:"
               color="teal"
               isFridaySelection={true}
             />
 
-            {/* 36 Week Labs */}
-            <AppointmentCard
-              title="36 Week Labs"
-              dates={appointments.week36Labs.fridays}
-              color="orange"
-              isFridaySelection={true}
-            />
+            {/* Second Trimester Appointments */}
+            {appointments.secondTrimester.map((appt, index) => {
+              if (appt.isUltrasound) {
+                return (
+                  <AppointmentCard
+                    key={`second-${index}`}
+                    title={`${appt.week} Week Ultrasound`}
+                    date={appt.date}
+                    color="purple"
+                  />
+                );
+              }
+              return (
+                <AppointmentCard
+                  key={`second-${index}`}
+                  title={`${appt.week} Week Appointment`}
+                  dates={appt.dates}
+                  description="Choose one:"
+                  color="orange"
+                  isFridaySelection={true}
+                />
+              );
+            })}
 
-            {/* 37 Week Appointment */}
+            {/* Glucose Test */}
             <AppointmentCard
-              title="37 Week Appointment"
-              dates={appointments.week37.fridays}
+              title="Glucose Test - 26-28 weeks"
+              dates={appointments.glucoseTest}
+              description="Lab day options (choose one):"
               color="amber"
               isFridaySelection={true}
             />
 
-            {/* 41 Week Biophysical Profile */}
-            <AppointmentCard
-              title="41 Week Biophysical Profile"
-              date={appointments.week41BiophysicalProfile.date}
-              color="rose"
-            />
+            {/* Third Trimester Appointments */}
+            {appointments.thirdTrimester.map((appt, index) => (
+              <div key={`third-${index}`}>
+                <AppointmentCard
+                  title={`${appt.week} Week Appointment`}
+                  dates={appt.dates}
+                  description="Choose one:"
+                  color="green"
+                  isFridaySelection={true}
+                />
+                {appt.telehealth && (
+                  <AppointmentCard
+                    title={`${appt.week} Week Telehealth`}
+                    dates={appt.telehealth}
+                    description="Friday options (choose one):"
+                    color="indigo"
+                    isFridaySelection={true}
+                  />
+                )}
+                {appt.labs && (
+                  <AppointmentCard
+                    title={`${appt.week} Week Labs`}
+                    dates={appt.labs}
+                    description="Lab day options (choose one):"
+                    color="blue"
+                    isFridaySelection={true}
+                  />
+                )}
+              </div>
+            ))}
 
-            {/* Childbirth Education Class */}
+            {/* Weekly Appointments 37-41 weeks */}
+            {appointments.weeklyAppts.map((appt, index) => (
+              <div key={`weekly-${index}`}>
+                {appt.isDueDate ? (
+                  <AppointmentCard
+                    title="Estimated Due Date - 40 weeks"
+                    date={appt.date}
+                    color="pink"
+                  />
+                ) : appt.isBiophysical ? (
+                  <AppointmentCard
+                    title="41 Week Biophysical Profile"
+                    date={appt.date}
+                    color="rose"
+                  />
+                ) : (
+                  <>
+                    <AppointmentCard
+                      title={`${appt.week} Week Appointment`}
+                      dates={appt.dates}
+                      description="Choose one:"
+                      color="teal"
+                      isFridaySelection={true}
+                    />
+                    {appt.telehealth && (
+                      <AppointmentCard
+                        title={`${appt.week} Week Telehealth`}
+                        dates={appt.telehealth}
+                        description="Friday options (choose one):"
+                        color="indigo"
+                        isFridaySelection={true}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
+
+            {/* Classes */}
             <AppointmentCard
               title="Childbirth Education Class"
-              date={appointments.childbirthClass.date}
-              description={appointments.childbirthClass.description}
+              date={appointments.classes.childbirth}
+              description="First Saturday of the month before due date"
               color="purple"
-              showWeeks={false}
             />
 
-            {/* Breastfeeding Class */}
             <AppointmentCard
               title="Breastfeeding Class"
-              date={appointments.breastfeedingClass.date}
-              description={appointments.breastfeedingClass.description}
+              date={appointments.classes.breastfeeding}
+              description="Third Thursday of the month before due date"
               color="green"
-              showWeeks={false}
             />
+
+            {/* Postpartum Section */}
+            <div className="p-6 mt-8 bg-white border-2 border-pink-200 rounded-lg shadow-sm">
+              <h3 className="mb-4 text-xl font-semibold text-gray-800">Postpartum Care</h3>
+              <p className="mb-3 text-gray-700">
+                After birth, our staff will contact you to schedule:
+              </p>
+              <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                <li>24–72 hour postpartum visit</li>
+                <li>
+                  2-week postpartum visit: in-office Monday/Wednesday for first-time moms;
+                  Friday telehealth if you've had a baby before
+                </li>
+                <li>6–8 week postpartum visit: in-office Monday/Wednesday</li>
+              </ul>
+            </div>
           </div>
         )}
 
