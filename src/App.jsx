@@ -142,13 +142,15 @@ function App() {
             {/* Third Trimester Appointments */}
             {appointments.thirdTrimester.map((appt, index) => (
               <div key={`third-${index}`}>
-                <AppointmentCard
-                  title={`${appt.week} Week Appointment`}
-                  dates={appt.dates}
-                  description="Choose one:"
-                  color="green"
-                  isFridaySelection={true}
-                />
+                {appt.dates && (
+                  <AppointmentCard
+                    title={`${appt.week} Week Appointment`}
+                    dates={appt.dates}
+                    description="Choose one:"
+                    color="green"
+                    isFridaySelection={true}
+                  />
+                )}
                 {appt.telehealth && (
                   <AppointmentCard
                     title={`${appt.week} Week Telehealth`}
@@ -173,33 +175,41 @@ function App() {
             {/* Weekly Appointments 37-41 weeks */}
             {appointments.weeklyAppts.map((appt, index) => (
               <div key={`weekly-${index}`}>
-                {appt.isDueDate ? (
-                  null
-                ) : appt.isBiophysical ? (
+                {appt.telehealth && (
                   <AppointmentCard
-                    title="41 Week Biophysical Profile"
-                    date={appt.date}
-                    color="rose"
+                    title={`${appt.week} Week Telehealth`}
+                    dates={appt.telehealth}
+                    description="Friday options (choose one):"
+                    color="indigo"
+                    isFridaySelection={true}
                   />
-                ) : (
-                  <>
-                    <AppointmentCard
-                      title={`${appt.week} Week Appointment`}
-                      dates={appt.dates}
-                      description="Choose one:"
-                      color="teal"
-                      isFridaySelection={true}
-                    />
-                    {appt.telehealth && (
-                      <AppointmentCard
-                        title={`${appt.week} Week Telehealth`}
-                        dates={appt.telehealth}
-                        description="Friday options (choose one):"
-                        color="indigo"
-                        isFridaySelection={true}
-                      />
-                    )}
-                  </>
+                )}
+                {appt.dates && !appt.telehealth && (
+                  <AppointmentCard
+                    title={`${appt.week} Week Appointment`}
+                    dates={appt.dates}
+                    description="Choose one:"
+                    color="teal"
+                    isFridaySelection={true}
+                  />
+                )}
+                {appt.isWeek40 && (
+                  <AppointmentCard
+                    title="40 Week Appointment"
+                    dates={appt.dates}
+                    description="Choose one:"
+                    color="orange"
+                    isFridaySelection={true}
+                  />
+                )}
+                {appt.isWeek41 && (
+                  <AppointmentCard
+                    title="41 Week Appointment"
+                    dates={appt.dates}
+                    description="Choose one:"
+                    color="amber"
+                    isFridaySelection={true}
+                  />
                 )}
               </div>
             ))}
@@ -217,6 +227,14 @@ function App() {
               date={appointments.classes.breastfeeding}
               description="Third Thursday of the month before due date"
               color="green"
+            />
+
+            {/* Birth Rehearsal */}
+            <AppointmentCard
+              title="Birth Rehearsal"
+              date={appointments.birthRehearsal.week36Date}
+              description="Scheduled with the Doula around 36 weeks"
+              color="rose"
             />
 
             {/* Postpartum Section */}

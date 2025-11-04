@@ -155,6 +155,7 @@ export function calculateAppointments(dueDateString) {
 
   const secondTrimesterAppts = [
     { week: 16, dates: getMondayWednesdayOptions(week16) },
+    { week: 20, dates: getMondayWednesdayOptions(week20), hasAppointment: true },
     { week: 20, date: week20, isUltrasound: true },
     { week: 24, dates: getMondayWednesdayOptions(week24) },
     { week: 28, dates: getMondayWednesdayOptions(week28) }
@@ -172,7 +173,7 @@ export function calculateAppointments(dueDateString) {
 
   const thirdTrimesterAppts = [
     { week: 30, dates: getMondayWednesdayOptions(week30) },
-    { week: 32, dates: getMondayWednesdayOptions(week32), telehealth: week32Telehealth },
+    { week: 32, telehealth: week32Telehealth },
     { week: 34, dates: getMondayWednesdayOptions(week34) },
     { week: 36, dates: getMondayWednesdayOptions(week36), labs: week36Labs }
   ];
@@ -187,11 +188,11 @@ export function calculateAppointments(dueDateString) {
   const week37Telehealth = getTelehealthFridayOptions(dueDate, 37);
 
   const weeklyAppts = [
-    { week: 37, dates: getMondayWednesdayOptions(week37), telehealth: week37Telehealth },
+    { week: 37, telehealth: week37Telehealth },
     { week: 38, dates: getMondayWednesdayOptions(week38) },
     { week: 39, dates: getMondayWednesdayOptions(week39) },
-    { week: 40, date: week40, isDueDate: true },
-    { week: 41, date: week41, isBiophysical: true }
+    { week: 40, dates: getMondayWednesdayOptions(week40), isWeek40: true },
+    { week: 41, dates: getMondayWednesdayOptions(week41), isWeek41: true }
   ];
 
   // Classes
@@ -214,6 +215,9 @@ export function calculateAppointments(dueDateString) {
     classes: {
       childbirth: childbirthClass,
       breastfeeding: breastfeedingClass
+    },
+    birthRehearsal: {
+      week36Date: week36
     },
     dueDate
   };

@@ -61,7 +61,7 @@ const AppointmentCard = ({
             <div className="mt-2">
               {isFridaySelection && (
                 <p className="mb-2 text-sm font-semibold text-gray-700">
-                  Available Fridays, choose one:
+                  Available dates, choose one:
                 </p>
               )}
               <ul className="space-y-1">
