@@ -192,7 +192,7 @@ export function calculateAppointments(dueDateString) {
     { week: 38, dates: getMondayWednesdayOptions(week38) },
     { week: 39, dates: getMondayWednesdayOptions(week39) },
     { week: 40, dates: getMondayWednesdayOptions(week40), isWeek40: true },
-    { week: 41, dates: getMondayWednesdayOptions(week41), isWeek41: true }
+    { week: 41, dates: getMondayWednesdayOptions(week41), week41Date: week41, isWeek41: true }
   ];
 
   // Classes

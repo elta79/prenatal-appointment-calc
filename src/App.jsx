@@ -193,12 +193,19 @@ function App() {
                   />
                 )}
                 {appt.isWeek41 && (
-                  <AppointmentCard
-                    title="41 Week Appointment"
-                    dates={appt.dates}
-                    color="amber"
-                    isFridaySelection={true}
-                  />
+                  <>
+                    <AppointmentCard
+                      title="41 Week Biophysical Profile"
+                      date={appt.week41Date}
+                      color="rose"
+                    />
+                    <AppointmentCard
+                      title="41 Week Appointment"
+                      dates={appt.dates}
+                      color="amber"
+                      isFridaySelection={true}
+                    />
+                  </>
                 )}
               </div>
             ))}
