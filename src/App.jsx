@@ -27,14 +27,14 @@ function App() {
     <div className="min-h-screen px-4 py-8 bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8 text-center print:mb-6">
-          <div className="flex items-center justify-center gap-3 mb-4">
+        <div className="mb-8 text-center print:mb-2">
+          <div className="flex items-center justify-center gap-3 mb-4 print:mb-1 print:gap-2">
             <Baby className="text-pink-600" size={40} />
             <h1 className="text-4xl font-bold text-gray-800">
               Prenatal Appointment Calculator
             </h1>
           </div>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 no-print">
             Calculate your prenatal appointment schedule
           </p>
         </div>
