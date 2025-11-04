@@ -93,7 +93,6 @@ function App() {
             <AppointmentCard
               title="Initial Labs"
               dates={appointments.firstTrimester.initialLabs}
-              description="Lab day options (choose one):"
               color="blue"
               isFridaySelection={true}
             />
@@ -101,7 +100,6 @@ function App() {
             <AppointmentCard
               title="First In-Office Visit"
               dates={appointments.firstTrimester.firstOfficeVisit}
-              description="Choose one:"
               color="teal"
               isFridaySelection={true}
             />
@@ -123,7 +121,6 @@ function App() {
                   key={`second-${index}`}
                   title={`${appt.week} Week Appointment`}
                   dates={appt.dates}
-                  description="Choose one:"
                   color="orange"
                   isFridaySelection={true}
                 />
@@ -134,7 +131,6 @@ function App() {
             <AppointmentCard
               title="Glucose Test - 26-28 weeks"
               dates={appointments.glucoseTest}
-              description="Lab day options (choose one):"
               color="amber"
               isFridaySelection={true}
             />
@@ -146,7 +142,6 @@ function App() {
                   <AppointmentCard
                     title={`${appt.week} Week Appointment`}
                     dates={appt.dates}
-                    description="Choose one:"
                     color="green"
                     isFridaySelection={true}
                   />
@@ -155,7 +150,6 @@ function App() {
                   <AppointmentCard
                     title={`${appt.week} Week Telehealth`}
                     dates={appt.telehealth}
-                    description="Friday options (choose one):"
                     color="indigo"
                     isFridaySelection={true}
                   />
@@ -164,7 +158,6 @@ function App() {
                   <AppointmentCard
                     title={`${appt.week} Week Labs`}
                     dates={appt.labs}
-                    description="Lab day options (choose one):"
                     color="blue"
                     isFridaySelection={true}
                   />
@@ -179,16 +172,14 @@ function App() {
                   <AppointmentCard
                     title={`${appt.week} Week Telehealth`}
                     dates={appt.telehealth}
-                    description="Friday options (choose one):"
                     color="indigo"
                     isFridaySelection={true}
                   />
                 )}
-                {appt.dates && !appt.telehealth && (
+                {appt.dates && !appt.telehealth && !appt.isWeek40 && !appt.isWeek41 && (
                   <AppointmentCard
                     title={`${appt.week} Week Appointment`}
                     dates={appt.dates}
-                    description="Choose one:"
                     color="teal"
                     isFridaySelection={true}
                   />
@@ -197,7 +188,6 @@ function App() {
                   <AppointmentCard
                     title="40 Week Appointment"
                     dates={appt.dates}
-                    description="Choose one:"
                     color="orange"
                     isFridaySelection={true}
                   />
@@ -206,7 +196,6 @@ function App() {
                   <AppointmentCard
                     title="41 Week Appointment"
                     dates={appt.dates}
-                    description="Choose one:"
                     color="amber"
                     isFridaySelection={true}
                   />
