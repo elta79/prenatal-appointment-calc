@@ -70,17 +70,24 @@ function App() {
         {/* Appointments Display */}
         {appointments && (
           <div className="space-y-4">
-            {/* First Trimester */}
+            {/* Due Date */}
             <AppointmentCard
-              title="First Trimester"
-              description={`Schedule before ${formatDate(appointments.firstTrimester.week13)}`}
+              title="Estimated Due Date - 40 weeks"
+              date={appointments.dueDate}
               color="pink"
+            />
+
+            {/* First Trimester Ultrasound */}
+            <AppointmentCard
+              title="First Trimester Ultrasound - schedule before 13 weeks"
+              description={`Schedule before ${formatDate(appointments.firstTrimester.week13)}`}
+              color="indigo"
             />
 
             <AppointmentCard
               title="Initial Telehealth Appointment - 11 weeks"
               date={appointments.firstTrimester.initialTelehealth}
-              color="indigo"
+              color="purple"
             />
 
             <AppointmentCard
@@ -167,11 +174,7 @@ function App() {
             {appointments.weeklyAppts.map((appt, index) => (
               <div key={`weekly-${index}`}>
                 {appt.isDueDate ? (
-                  <AppointmentCard
-                    title="Estimated Due Date - 40 weeks"
-                    date={appt.date}
-                    color="pink"
-                  />
+                  null
                 ) : appt.isBiophysical ? (
                   <AppointmentCard
                     title="41 Week Biophysical Profile"
