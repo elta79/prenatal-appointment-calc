@@ -162,18 +162,19 @@ export function calculateAppointments(dueDateString) {
   ];
 
   // Third Trimester - Every 2 weeks from 28-36 weeks
-  const week30 = calculateWeekDate(dueDate, 30);
+//  const week30 = calculateWeekDate(dueDate, 30);
   const week32 = calculateWeekDate(dueDate, 32);
   const week34 = calculateWeekDate(dueDate, 34);
   const week36 = calculateWeekDate(dueDate, 36);
 
   const glucoseTest = getLabFridays(calculateWeekDate(dueDate, 27));
-  const week32Telehealth = getTelehealthFridayOptions(dueDate, 32);
+//  const week32Telehealth = getTelehealthFridayOptions(dueDate, 32);
   const week36Labs = getLabFridays(week36);
 
   const thirdTrimesterAppts = [
-    { week: 30, dates: getMondayWednesdayOptions(week30) },
-    { week: 32, telehealth: week32Telehealth },
+//    { week: 30, dates: getMondayWednesdayOptions(week30) },
+//    { week: 32, telehealth: week32Telehealth },
+    { week: 32, dates: getMondayWednesdayOptions(week32) },
     { week: 34, dates: getMondayWednesdayOptions(week34) },
     { week: 36, dates: getMondayWednesdayOptions(week36), labs: week36Labs }
   ];
@@ -189,6 +190,7 @@ export function calculateAppointments(dueDateString) {
 
   const weeklyAppts = [
     { week: 37, telehealth: week37Telehealth },
+    { week: 37, dates: getMondayWednesdayOptions(week37) },
     { week: 38, dates: getMondayWednesdayOptions(week38) },
     { week: 39, dates: getMondayWednesdayOptions(week39) },
     { week: 40, dates: getMondayWednesdayOptions(week40), isWeek40: true },

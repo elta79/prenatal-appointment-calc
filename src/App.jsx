@@ -170,7 +170,7 @@ function App() {
               <div key={`weekly-${index}`}>
                 {appt.telehealth && (
                   <AppointmentCard
-                    title={`${appt.week} Week Telehealth`}
+                    title={`${appt.week} Week Telehealth - ONLY multip w/o risk`}
                     dates={appt.telehealth}
                     color="indigo"
                     isFridaySelection={true}
