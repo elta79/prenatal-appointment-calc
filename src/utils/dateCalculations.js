@@ -97,6 +97,37 @@ export function getLabFridays(targetDate) {
 }
 
 /**
+ * Whole calendar days from `from` to `to`.
+ * Uses UTC date parts so daylight-saving shifts can't add or drop a day.
+ */
+export function daysBetween(from, to) {
+  const a = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());
+  const b = Date.UTC(to.getFullYear(), to.getMonth(), to.getDate());
+  return Math.round((b - a) / (1000 * 60 * 60 * 24));
+}
+
+/**
+ * Gestational age on `date`, given the due date (40+0), as "W+D" (e.g. "12+3")
+ */
+export function getGestationalAge(dueDate, date) {
+  const gaDays = 280 - daysBetween(date, dueDate);
+  const weeks = Math.floor(gaDays / 7);
+  const days = gaDays - weeks * 7;
+  return `${weeks}+${days}`;
+}
+
+/**
+ * First alternating lab Friday on or after a given date
+ */
+export function getFirstLabFridayOnOrAfter(date) {
+  // Same reference as getLabFridays: January 9, 2026 is a lab Friday
+  const referenceDate = new Date(2026, 0, 9);
+  const daysDiff = daysBetween(referenceDate, date);
+  const daysToNext = ((14 - (daysDiff % 14)) % 14 + 14) % 14;
+  return addDays(date, daysToNext);
+}
+
+/**
  * Find Monday and Wednesday options for a given week
  */
 export function getMondayWednesdayOptions(targetDate) {
@@ -167,7 +198,13 @@ export function calculateAppointments(dueDateString) {
   const week34 = calculateWeekDate(dueDate, 34);
   const week36 = calculateWeekDate(dueDate, 36);
 
-  const glucoseTest = getLabFridays(calculateWeekDate(dueDate, 27));
+  // Glucose test: Rh negative at exactly 26+0; Rh positive on the first lab Friday at/after 26+0
+  // (with labs every other Friday, that always falls on or before 28+0)
+  const week26 = calculateWeekDate(dueDate, 26);
+  const glucoseTest = {
+    rhNegative: week26,
+    rhPositive: getFirstLabFridayOnOrAfter(week26)
+  };
 //  const week32Telehealth = getTelehealthFridayOptions(dueDate, 32);
   const week36Labs = getLabFridays(week36);
 
