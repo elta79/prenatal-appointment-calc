@@ -173,7 +173,10 @@ export function calculateAppointments(dueDateString) {
 
   // First Trimester
   const week13 = calculateWeekDate(dueDate, 13);
+  const week8 = calculateWeekDate(dueDate, 8);
+  const week10 = calculateWeekDate(dueDate, 10);
   const week11 = calculateWeekDate(dueDate, 11);
+  // 11-week Friday: no longer shown as a telehealth visit, but still anchors the first in-office visit
   const initialTelehealth = findFridayAtWeek(dueDate, 11);
   const initialLabs = getLabFridays(week11);
   const firstOfficeVisit = getMondayWednesdayOptions(addDays(initialTelehealth, 3));
@@ -243,6 +246,8 @@ export function calculateAppointments(dueDateString) {
   return {
     firstTrimester: {
       week13,
+      week8,
+      week10,
       initialTelehealth,
       initialLabs,
       firstOfficeVisit

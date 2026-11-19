@@ -121,17 +121,15 @@ function App() {
 
             {/* First Trimester Ultrasound */}
             <AppointmentCard
-              title="First Trimester Ultrasound - schedule before 13 weeks"
+              title="First Trimester Ultrasound - before 13 weeks"
               description={`Schedule before ${formatDate(appointments.firstTrimester.week13)}`}
               color="indigo"
-            />
-
-            <AppointmentCard
-              title="Initial Telehealth Appointment - 11 weeks"
-              dueDate={appointments.dueDate}
-              date={appointments.firstTrimester.initialTelehealth}
-              color="purple"
-            />
+            >
+              <p className="text-gray-700">
+                <span className="font-semibold">Recommended 8–10 weeks:</span>{' '}
+                {formatDate(appointments.firstTrimester.week8)} – {formatDate(appointments.firstTrimester.week10)}
+              </p>
+            </AppointmentCard>
 
             <AppointmentCard
               title="Initial Labs"
