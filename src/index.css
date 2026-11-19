@@ -124,6 +124,18 @@ body {
     margin-bottom: 0 !important;
   }
 
+  /* Patient name line above the card columns */
+  .patient-name {
+    font-size: 0.95rem !important;
+    margin: 0 0 0.3rem 0 !important;
+  }
+
+  /* Gestational age after each date */
+  .ga-label {
+    font-size: 0.65rem !important;
+    color: #4b5563 !important;
+  }
+
   /* Optimize for 2 pages */
   @page {
     margin: 0.5cm;

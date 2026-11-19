@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
-import { formatDate } from '../utils/dateCalculations';
+import { formatDate, getGestationalAge } from '../utils/dateCalculations';
 
 const colorClasses = {
   pink: 'bg-pink-50 border-pink-200',
@@ -34,8 +34,16 @@ const AppointmentCard = ({
   color = 'blue',
   showWeeks = false,
   weeks,
-  isFridaySelection = false
+  isFridaySelection = false,
+  dueDate,
+  children
 }) => {
+  // Gestational age shown after a date only when the card is given a dueDate
+  const ga = (d) =>
+    dueDate ? (
+      <span className="ml-1 text-sm text-gray-500 ga-label">({getGestationalAge(dueDate, d)})</span>
+    ) : null;
+
   return (
     <div className={`${colorClasses[color]} border-2 rounded-lg p-6 shadow-sm print-break`}>
       <div className="flex items-start gap-3">
@@ -54,7 +62,7 @@ const AppointmentCard = ({
           )}
 
           {date && (
-            <p className="font-medium text-gray-700">{formatDate(date)}</p>
+            <p className="font-medium text-gray-700">{formatDate(date)}{ga(date)}</p>
           )}
 
           {dates && dates.length > 0 && (
@@ -67,12 +75,14 @@ const AppointmentCard = ({
               <ul className="space-y-1">
                 {dates.map((d, index) => (
                   <li key={index} className="text-gray-700">
-                    {isFridaySelection && '• '}{formatDate(d)}
+                    {isFridaySelection && '• '}{formatDate(d)}{ga(d)}
                   </li>
                 ))}
               </ul>
             </div>
           )}
+
+          {children}
         </div>
       </div>
     </div>

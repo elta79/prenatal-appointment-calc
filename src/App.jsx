@@ -1,11 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Printer, Baby } from 'lucide-react';
 import AppointmentCard from './components/AppointmentCard';
-import { calculateAppointments, formatDate } from './utils/dateCalculations';
+import { calculateAppointments, formatDate, getGestationalAge } from './utils/dateCalculations';
 
 function App() {
   const [dueDate, setDueDate] = useState('');
   const [appointments, setAppointments] = useState(null);
+  // Patient name lives only in component state: never stored, never in the URL
+  const [patientName, setPatientName] = useState('');
+  const nameRef = useRef('');
+  nameRef.current = patientName;
+
+  // Set the page title just before printing so "Save as PDF" defaults to
+  // "Prenatal Schedule - <Name>.pdf" (Chrome/Edge). Restored right after.
+  // Uses print events so it also works with Cmd/Ctrl+P, not just the button.
+  useEffect(() => {
+    let originalTitle = document.title;
+    const onBeforePrint = () => {
+      originalTitle = document.title;
+      const safeName = nameRef.current.replace(/[\\/:*?"<>|]/g, '').trim();
+      if (safeName) document.title = `Prenatal Schedule - ${safeName}`;
+    };
+    const onAfterPrint = () => {
+      document.title = originalTitle;
+    };
+    window.addEventListener('beforeprint', onBeforePrint);
+    window.addEventListener('afterprint', onAfterPrint);
+    return () => {
+      window.removeEventListener('beforeprint', onBeforePrint);
+      window.removeEventListener('afterprint', onAfterPrint);
+    };
+  }, []);
 
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
@@ -42,6 +67,17 @@ function App() {
         {/* Input Section */}
         <div className="p-6 mb-8 bg-white rounded-lg shadow-md no-print">
           <div className="max-w-md mx-auto">
+            <label htmlFor="patientName" className="block mb-2 text-sm font-medium text-gray-700">
+              Patient Name (optional)
+            </label>
+            <input
+              type="text"
+              id="patientName"
+              value={patientName}
+              onChange={(e) => setPatientName(e.target.value)}
+              autoComplete="off"
+              className="w-full px-4 py-3 mb-4 text-lg border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            />
             <label htmlFor="dueDate" className="block mb-2 text-sm font-medium text-gray-700">
               Enter Your Estimated Due Date
             </label>
@@ -68,6 +104,12 @@ function App() {
         </div>
 
         {/* Appointments Display */}
+        {appointments && patientName.trim() && (
+          <p className="mb-4 text-xl font-semibold text-center text-gray-800 patient-name">
+            Patient: {patientName.trim()}
+          </p>
+        )}
+
         {appointments && (
           <div className="space-y-4">
             {/* Due Date */}
@@ -79,19 +121,19 @@ function App() {
 
             {/* First Trimester Ultrasound */}
             <AppointmentCard
-              title="First Trimester Ultrasound - schedule before 13 weeks"
+              title="First Trimester Ultrasound - before 13 weeks"
               description={`Schedule before ${formatDate(appointments.firstTrimester.week13)}`}
               color="indigo"
-            />
-
-            <AppointmentCard
-              title="Initial Telehealth Appointment - 11 weeks"
-              date={appointments.firstTrimester.initialTelehealth}
-              color="purple"
-            />
+            >
+              <p className="text-gray-700">
+                <span className="font-semibold">Recommended 8–10 weeks:</span>{' '}
+                {formatDate(appointments.firstTrimester.week8)} – {formatDate(appointments.firstTrimester.week10)}
+              </p>
+            </AppointmentCard>
 
             <AppointmentCard
               title="Initial Labs"
+              dueDate={appointments.dueDate}
               dates={appointments.firstTrimester.initialLabs}
               color="blue"
               isFridaySelection={true}
@@ -99,6 +141,7 @@ function App() {
 
             <AppointmentCard
               title="First In-Office Visit"
+              dueDate={appointments.dueDate}
               dates={appointments.firstTrimester.firstOfficeVisit}
               color="teal"
               isFridaySelection={true}
@@ -120,6 +163,7 @@ function App() {
                 <AppointmentCard
                   key={`second-${index}`}
                   title={`${appt.week} Week Appointment`}
+                  dueDate={appointments.dueDate}
                   dates={appt.dates}
                   color="orange"
                   isFridaySelection={true}
@@ -130,10 +174,25 @@ function App() {
             {/* Glucose Test */}
             <AppointmentCard
               title="Glucose Test - 26-28 weeks"
-              dates={appointments.glucoseTest}
               color="amber"
-              isFridaySelection={true}
-            />
+            >
+              <ul className="space-y-1">
+                <li className="text-gray-700">
+                  <span className="font-semibold">Rh negative:</span>{' '}
+                  {formatDate(appointments.glucoseTest.rhNegative)}
+                  <span className="ml-1 text-sm text-gray-500 ga-label">
+                    ({getGestationalAge(appointments.dueDate, appointments.glucoseTest.rhNegative)})
+                  </span>
+                </li>
+                <li className="text-gray-700">
+                  <span className="font-semibold">Rh positive:</span>{' '}
+                  {formatDate(appointments.glucoseTest.rhPositive)}
+                  <span className="ml-1 text-sm text-gray-500 ga-label">
+                    ({getGestationalAge(appointments.dueDate, appointments.glucoseTest.rhPositive)})
+                  </span>
+                </li>
+              </ul>
+            </AppointmentCard>
 
             {/* Third Trimester Appointments */}
             {appointments.thirdTrimester.map((appt, index) => (
@@ -141,6 +200,7 @@ function App() {
                 {appt.dates && (
                   <AppointmentCard
                     title={`${appt.week} Week Appointment`}
+                    dueDate={appointments.dueDate}
                     dates={appt.dates}
                     color="green"
                     isFridaySelection={true}
@@ -149,6 +209,7 @@ function App() {
                 {appt.telehealth && (
                   <AppointmentCard
                     title={`${appt.week} Week Telehealth`}
+                    dueDate={appointments.dueDate}
                     dates={appt.telehealth}
                     color="indigo"
                     isFridaySelection={true}
@@ -157,6 +218,7 @@ function App() {
                 {appt.labs && (
                   <AppointmentCard
                     title={`${appt.week} Week Labs`}
+                    dueDate={appointments.dueDate}
                     dates={appt.labs}
                     color="blue"
                     isFridaySelection={true}
@@ -171,6 +233,7 @@ function App() {
                 {appt.telehealth && (
                   <AppointmentCard
                     title={`${appt.week} Week Telehealth - ONLY multip w/o risk`}
+                    dueDate={appointments.dueDate}
                     dates={appt.telehealth}
                     color="indigo"
                     isFridaySelection={true}
@@ -179,6 +242,7 @@ function App() {
                 {appt.dates && !appt.telehealth && !appt.isWeek40 && !appt.isWeek41 && (
                   <AppointmentCard
                     title={`${appt.week} Week Appointment`}
+                    dueDate={appointments.dueDate}
                     dates={appt.dates}
                     color="teal"
                     isFridaySelection={true}
@@ -187,6 +251,7 @@ function App() {
                 {appt.isWeek40 && (
                   <AppointmentCard
                     title="40 Week Appointment"
+                    dueDate={appointments.dueDate}
                     dates={appt.dates}
                     color="orange"
                     isFridaySelection={true}
@@ -201,6 +266,7 @@ function App() {
                     />
                     <AppointmentCard
                       title="41 Week Appointment"
+                      dueDate={appointments.dueDate}
                       dates={appt.dates}
                       color="amber"
                       isFridaySelection={true}
@@ -213,6 +279,7 @@ function App() {
             {/* Classes */}
             <AppointmentCard
               title="Childbirth Education Class"
+              dueDate={appointments.dueDate}
               date={appointments.classes.childbirth}
               description="First Saturday of the month before due date"
               color="purple"
@@ -220,6 +287,7 @@ function App() {
 
             <AppointmentCard
               title="Breastfeeding Class"
+              dueDate={appointments.dueDate}
               date={appointments.classes.breastfeeding}
               description="Third Thursday of the month before due date"
               color="green"
@@ -228,6 +296,7 @@ function App() {
             {/* Birth Rehearsal */}
             <AppointmentCard
               title="Birth Rehearsal"
+              dueDate={appointments.dueDate}
               date={appointments.birthRehearsal.week36Date}
               description="Scheduled with the Doula around 36 weeks"
               color="rose"
